@@ -1197,6 +1197,11 @@
           }
         }
 
+        // Stop calendar listener NOW — before writing to Firestore.
+        // Otherwise the new availability entry triggers onSnapshot → rebuildBlocked
+        // which sees the user's own check-in as blocked and clears S.checkIn/S.checkOut.
+        if (unsubCalendar) { unsubCalendar(); unsubCalendar = null; }
+
         // Create Firestore doc to get ID first
         const bookingsCol = collection(clientRef, 'bookings');
         const tempRef = doc(bookingsCol);
@@ -1285,9 +1290,6 @@
         el('conf-total').textContent = php(S.grandTotal);
         el('conf-method').textContent = { gcash: 'GCash', paymaya: 'PayMaya', bank: 'Bank Transfer' }[S.paymentMethod] || S.paymentMethod;
         el('conf-email').textContent = S.guestEmail;
-
-        // Stop the real-time listener
-        if (unsubCalendar) { unsubCalendar(); unsubCalendar = null; }
 
         setProgress(5);
 
