@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo">
-        <span class="nav-logo-name">Staycation</span>
+        <span class="nav-logo-name" id="nav-name">Staycation</span>
         <span class="nav-logo-tag">Book Direct</span>
       </a>
       <ul class="nav-links">
@@ -30,48 +30,54 @@
     <h1>Booking Policy</h1>
     <p class="subtitle">Please read before making a reservation.</p>
 
-    <h2>Reservation Fee</h2>
-    <p>A non-refundable reservation fee is required to confirm your booking. This fee will be deducted from your total balance upon check-in. The remaining balance is due upon arrival.</p>
+    <!-- Dynamic content loaded from Firestore -->
+    <div id="policy-content">
+      <div style="text-align:center;padding:40px 0;color:var(--muted);">
+        <span style="display:inline-block;width:24px;height:24px;border:3px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+      </div>
+    </div>
 
-    <h2>How to Reserve</h2>
-    <ul>
-      <li>Select your preferred room and dates on the booking page</li>
-      <li>Fill in your guest details</li>
-      <li>Choose any add-ons you want</li>
-      <li>Send the reservation fee via GCash, PayMaya, or bank transfer</li>
-      <li>Upload your payment screenshot</li>
-      <li>Wait for confirmation via email (usually within 1–2 hours)</li>
-    </ul>
+    <!-- Default content shown as fallback if no custom policy is set -->
+    <div id="policy-default" style="display:none;">
+      <h2>Reservation Fee</h2>
+      <p>A non-refundable reservation fee is required to confirm your booking. This fee will be deducted from your total balance upon check-in.</p>
 
-    <h2>Check-in & Check-out</h2>
-    <ul>
-      <li>Check-in time: 2:00 PM</li>
-      <li>Check-out time: 12:00 PM (noon)</li>
-      <li>Early check-in or late check-out may be accommodated subject to availability — please contact us in advance</li>
-    </ul>
+      <h2>How to Reserve</h2>
+      <ul>
+        <li>Select your preferred room and dates on the booking page</li>
+        <li>Fill in your guest details</li>
+        <li>Choose any add-ons you want</li>
+        <li>Send the reservation fee via GCash, PayMaya, or bank transfer</li>
+        <li>Upload your payment screenshot</li>
+        <li>Wait for confirmation via email (usually within 1–2 hours)</li>
+      </ul>
 
-    <h2>Guest Count</h2>
-    <p>Each room has a maximum guest capacity. Additional guests beyond the base capacity are charged an extra guest fee per night. Exceeding the maximum capacity is not allowed.</p>
+      <h2>Check-in &amp; Check-out</h2>
+      <ul>
+        <li>Check-in time: 2:00 PM</li>
+        <li>Check-out time: 12:00 PM (noon)</li>
+        <li>Early check-in or late check-out may be accommodated subject to availability</li>
+      </ul>
 
-    <h2>House Rules</h2>
-    <ul>
-      <li>No smoking inside the property</li>
-      <li>Quiet hours from 10:00 PM to 6:00 AM</li>
-      <li>Pets are only allowed in pet-friendly rooms (additional fee applies)</li>
-      <li>Guests are responsible for any damages to the property</li>
-      <li>Please keep the property clean and dispose of trash properly</li>
-    </ul>
+      <h2>House Rules</h2>
+      <ul>
+        <li>No smoking inside the property</li>
+        <li>Quiet hours from 10:00 PM to 6:00 AM</li>
+        <li>Pets are only allowed in pet-friendly rooms (additional fee applies)</li>
+        <li>Guests are responsible for any damages to the property</li>
+      </ul>
 
-    <h2>Payment Methods</h2>
-    <ul>
-      <li>GCash</li>
-      <li>PayMaya</li>
-      <li>Bank Transfer</li>
-    </ul>
-    <p>Cash payments upon check-in are accepted for the remaining balance only. The reservation fee must be paid digitally.</p>
+      <h2>Payment Methods</h2>
+      <ul>
+        <li>GCash</li>
+        <li>PayMaya</li>
+        <li>Bank Transfer</li>
+      </ul>
+      <p>Cash payments upon check-in are accepted for the remaining balance only.</p>
 
-    <h2>Confirmation</h2>
-    <p>Bookings are confirmed only after your payment screenshot has been verified by our team. You will receive a confirmation email within 1–2 hours of submitting your booking.</p>
+      <h2>Confirmation</h2>
+      <p>Bookings are confirmed only after your payment screenshot has been verified. You will receive a confirmation email within 1–2 hours.</p>
+    </div>
 
     <p style="margin-top:2rem;"><a href="cancellation.html" style="color:var(--primary);font-weight:600;">View Cancellation Policy →</a></p>
   </div>
@@ -79,10 +85,84 @@
   <footer>
     <div class="container">
       <div class="footer-bottom">
-        <span>© 2026 Staycation. All rights reserved.</span>
+        <span>© 2026 <span id="footer-name">Staycation</span>. All rights reserved.</span>
         <span>Powered by <strong style="color:var(--primary)">BookingPH</strong></span>
       </div>
     </div>
   </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { FIREBASE_CONFIG, CLIENT_ID } from './firebase-config.js';
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db  = getFirestore(app);
+
+    function renderPolicy(text) {
+      if (!text || !text.trim()) return '';
+      const lines = text.split('\n');
+      let html = '', inList = false;
+      for (let raw of lines) {
+        const line = raw.trim();
+        if (!line) {
+          if (inList) { html += '</ul>'; inList = false; }
+          continue;
+        }
+        if (line.startsWith('- ') || line.startsWith('• ')) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${escHtml(line.slice(2))}</li>`;
+        } else {
+          if (inList) { html += '</ul>'; inList = false; }
+          html += `<p>${escHtml(line)}</p>`;
+        }
+      }
+      if (inList) html += '</ul>';
+      return html;
+    }
+
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    try {
+      const snap = await getDoc(doc(db, 'clients', CLIENT_ID, 'settings', 'public'));
+      const st   = snap.exists() ? snap.data() : {};
+
+      if (st.companyName) {
+        document.getElementById('nav-name').textContent  = st.companyName;
+        document.getElementById('footer-name').textContent = st.companyName;
+        document.title = `Booking Policy — ${st.companyName}`;
+      }
+
+      const hasBooking   = st.policyBooking    && st.policyBooking.trim();
+      const hasRules     = st.policyHouseRules  && st.policyHouseRules.trim();
+      const hasCheckin   = st.policyCheckinOut  && st.policyCheckinOut.trim();
+
+      if (hasBooking || hasRules || hasCheckin) {
+        let html = '';
+        if (hasBooking) {
+          html += `<h2>Booking Policy</h2>${renderPolicy(st.policyBooking)}`;
+        }
+        if (hasCheckin) {
+          html += `<h2>Check-in &amp; Check-out</h2>${renderPolicy(st.policyCheckinOut)}`;
+        }
+        if (hasRules) {
+          html += `<h2>House Rules</h2>${renderPolicy(st.policyHouseRules)}`;
+        }
+        document.getElementById('policy-content').innerHTML = html;
+      } else {
+        document.getElementById('policy-content').style.display = 'none';
+        document.getElementById('policy-default').style.display = 'block';
+      }
+    } catch (_) {
+      document.getElementById('policy-content').style.display = 'none';
+      document.getElementById('policy-default').style.display = 'block';
+    }
+  </script>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </body>
 </html>

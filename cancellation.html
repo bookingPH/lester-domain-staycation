@@ -13,7 +13,7 @@
   <nav class="navbar">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo">
-        <span class="nav-logo-name">Staycation</span>
+        <span class="nav-logo-name" id="nav-name">Staycation</span>
         <span class="nav-logo-tag">Book Direct</span>
       </a>
       <ul class="nav-links">
@@ -29,28 +29,38 @@
     <h1>Cancellation Policy</h1>
     <p class="subtitle">We understand plans change. Here's what you need to know.</p>
 
-    <h2>Reservation Fee</h2>
-    <p>The reservation fee paid to hold your dates is <strong>non-refundable</strong> under all circumstances. This covers the administrative cost of holding the property for you.</p>
+    <!-- Dynamic content loaded from Firestore -->
+    <div id="policy-content">
+      <div style="text-align:center;padding:40px 0;color:var(--muted);">
+        <span style="display:inline-block;width:24px;height:24px;border:3px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+      </div>
+    </div>
 
-    <h2>Cancellation by Guest</h2>
-    <ul>
-      <li><strong>More than 7 days before check-in:</strong> Full refund of any balance paid beyond the reservation fee</li>
-      <li><strong>3–7 days before check-in:</strong> 50% refund of any balance paid beyond the reservation fee</li>
-      <li><strong>Less than 3 days before check-in:</strong> No refund</li>
-      <li><strong>No-show:</strong> No refund</li>
-    </ul>
+    <!-- Default content shown as fallback if no custom policy is set -->
+    <div id="policy-default" style="display:none;">
+      <h2>Reservation Fee</h2>
+      <p>The reservation fee paid to hold your dates is <strong>non-refundable</strong> under all circumstances.</p>
 
-    <h2>How to Cancel</h2>
-    <p>To cancel your booking, contact us directly via phone or the email you received in your confirmation. Please provide your booking reference number.</p>
+      <h2>Cancellation by Guest</h2>
+      <ul>
+        <li><strong>More than 7 days before check-in:</strong> Full refund of any balance paid beyond the reservation fee</li>
+        <li><strong>3–7 days before check-in:</strong> 50% refund of any balance paid beyond the reservation fee</li>
+        <li><strong>Less than 3 days before check-in:</strong> No refund</li>
+        <li><strong>No-show:</strong> No refund</li>
+      </ul>
 
-    <h2>Rescheduling</h2>
-    <p>We allow free rescheduling if requested at least 7 days before your original check-in date, subject to room availability. Contact us to arrange a new date.</p>
+      <h2>How to Cancel</h2>
+      <p>To cancel your booking, contact us directly via phone or the email you received in your confirmation. Please provide your booking reference number.</p>
 
-    <h2>Cancellation by the Property</h2>
-    <p>In the rare event that we need to cancel your booking (e.g., due to unforeseen circumstances or force majeure), you will receive a full refund including the reservation fee, and we will assist you in finding an alternative if possible.</p>
+      <h2>Rescheduling</h2>
+      <p>We allow free rescheduling if requested at least 7 days before your original check-in date, subject to room availability.</p>
 
-    <h2>Refund Process</h2>
-    <p>Approved refunds are processed within 3–5 business days via the same payment method used to book (GCash, PayMaya, or bank transfer).</p>
+      <h2>Cancellation by the Property</h2>
+      <p>In the rare event that we need to cancel your booking, you will receive a full refund including the reservation fee.</p>
+
+      <h2>Refund Process</h2>
+      <p>Approved refunds are processed within 3–5 business days via the same payment method used to book.</p>
+    </div>
 
     <p style="margin-top:2rem;"><a href="booking-policy.html" style="color:var(--primary);font-weight:600;">← View Booking Policy</a></p>
   </div>
@@ -58,10 +68,72 @@
   <footer>
     <div class="container">
       <div class="footer-bottom">
-        <span>© 2026 Staycation. All rights reserved.</span>
+        <span>© 2026 <span id="footer-name">Staycation</span>. All rights reserved.</span>
         <span>Powered by <strong style="color:var(--primary)">BookingPH</strong></span>
       </div>
     </div>
   </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { FIREBASE_CONFIG, CLIENT_ID } from './firebase-config.js';
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db  = getFirestore(app);
+
+    function renderPolicy(text) {
+      if (!text || !text.trim()) return '';
+      const lines = text.split('\n');
+      let html = '', inList = false;
+      for (let raw of lines) {
+        const line = raw.trim();
+        if (!line) {
+          if (inList) { html += '</ul>'; inList = false; }
+          continue;
+        }
+        if (line.startsWith('- ') || line.startsWith('• ')) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${escHtml(line.slice(2))}</li>`;
+        } else {
+          if (inList) { html += '</ul>'; inList = false; }
+          html += `<p>${escHtml(line)}</p>`;
+        }
+      }
+      if (inList) html += '</ul>';
+      return html;
+    }
+
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    try {
+      const snap = await getDoc(doc(db, 'clients', CLIENT_ID, 'settings', 'public'));
+      const st   = snap.exists() ? snap.data() : {};
+
+      if (st.companyName) {
+        document.getElementById('nav-name').textContent    = st.companyName;
+        document.getElementById('footer-name').textContent = st.companyName;
+        document.title = `Cancellation Policy — ${st.companyName}`;
+      }
+
+      const hasCancellation = st.policyCancellation && st.policyCancellation.trim();
+
+      if (hasCancellation) {
+        document.getElementById('policy-content').innerHTML = renderPolicy(st.policyCancellation);
+      } else {
+        document.getElementById('policy-content').style.display = 'none';
+        document.getElementById('policy-default').style.display = 'block';
+      }
+    } catch (_) {
+      document.getElementById('policy-content').style.display = 'none';
+      document.getElementById('policy-default').style.display = 'block';
+    }
+  </script>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </body>
 </html>
