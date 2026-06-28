@@ -41,6 +41,7 @@
 
   <!-- HERO -->
   <section class="hero">
+    <div class="hero-bg-photo" id="hero-bg-back"></div>
     <div class="hero-bg-photo" id="hero-bg"></div>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
@@ -241,19 +242,28 @@
         const heroImages = Array.isArray(s.heroImages) && s.heroImages.length ? s.heroImages
                          : s.heroImageUrl ? [s.heroImageUrl] : [];
         if (heroImages.length) {
-          const bg = document.getElementById('hero-bg');
-          bg.style.backgroundImage = `url('${heroImages[0]}')`;
-          bg.classList.add('loaded');
+          const front = document.getElementById('hero-bg');
+          const back  = document.getElementById('hero-bg-back');
+          front.style.backgroundImage = `url('${heroImages[0]}')`;
+          front.classList.add('loaded');
+          back.classList.add('loaded');
           if (heroImages.length > 1) {
+            // Preload all images to avoid any gap
+            heroImages.forEach(url => { const img = new Image(); img.src = url; });
             let idx = 0;
             setInterval(() => {
               idx = (idx + 1) % heroImages.length;
-              bg.style.transition = 'opacity .6s';
-              bg.style.opacity = '0';
+              // Put next image on the back layer first (no flash — it's hidden under front)
+              back.style.backgroundImage = `url('${heroImages[idx]}')`;
+              // Fade front out to reveal back layer
+              front.style.transition = 'opacity .9s ease';
+              front.style.opacity = '0';
               setTimeout(() => {
-                bg.style.backgroundImage = `url('${heroImages[idx]}')`;
-                bg.style.opacity = '1';
-              }, 600);
+                // Snap front to new image silently, then restore — back layer bridges the gap
+                front.style.transition = 'none';
+                front.style.backgroundImage = `url('${heroImages[idx]}')`;
+                front.style.opacity = '1';
+              }, 950);
             }, 5000);
           }
         }
@@ -298,6 +308,18 @@
       } catch (e) { console.error('Settings:', e); }
     }
 
+    // Carousel state: unitId -> { photos, idx }
+    const RC = {};
+    window.rcGo = function(unitId, idx) {
+      const d = RC[unitId]; if (!d) return;
+      d.idx = idx;
+      const img = document.getElementById('rci-' + unitId);
+      if (img) { img.style.opacity = '0'; setTimeout(() => { img.src = d.photos[idx]; img.style.opacity = '1'; }, 180); }
+      document.querySelectorAll(`[data-dots="${unitId}"] .rc-dot`).forEach((dot, i) => dot.classList.toggle('active', i === idx));
+    };
+    window.rcPrev = function(unitId) { const d = RC[unitId]; if (d) rcGo(unitId, (d.idx - 1 + d.photos.length) % d.photos.length); };
+    window.rcNext = function(unitId) { const d = RC[unitId]; if (d) rcGo(unitId, (d.idx + 1) % d.photos.length); };
+
     async function loadRooms() {
       const grid = document.getElementById('rooms-grid');
       try {
@@ -313,12 +335,22 @@
         const lowest = Math.min(...units.map(u => u.weekdayRate || 0).filter(r => r > 0));
         if (lowest) document.getElementById('stat-price').textContent = php(lowest);
 
-        grid.innerHTML = units.map(u => `
-          <div class="room-card">
+        grid.innerHTML = units.map(u => {
+          const photos = Array.isArray(u.photoURLs) ? u.photoURLs.filter(Boolean) : [];
+          const hasMultiple = photos.length > 1;
+          return `
+          <div class="room-card" onclick="location.href='property.html?id=${u.id}'" style="cursor:pointer;">
             <div class="room-card-photo">
-              ${u.photoURLs && u.photoURLs.length
-                ? `<img src="${u.photoURLs[0]}" alt="${u.name}" loading="lazy">`
+              ${photos.length
+                ? `<img src="${photos[0]}" alt="${u.name}" loading="lazy" id="rci-${u.id}" style="transition:opacity .18s;">`
                 : `<div class="room-card-photo-placeholder"><i class="fa-solid fa-image"></i></div>`}
+              ${hasMultiple ? `
+                <button class="rc-btn rc-prev" onclick="event.stopPropagation();rcPrev('${u.id}')"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="rc-btn rc-next" onclick="event.stopPropagation();rcNext('${u.id}')"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="rc-dots" data-dots="${u.id}">
+                  ${photos.map((_,i) => `<span class="rc-dot${i===0?' active':''}" onclick="event.stopPropagation();rcGo('${u.id}',${i})"></span>`).join('')}
+                </div>
+              ` : ''}
               <span class="room-card-badge">Available</span>
             </div>
             <div class="room-card-body">
@@ -337,13 +369,23 @@
                   <span class="amount">${php(u.weekdayRate)}</span>
                   <span class="per">/ night (weekday)</span>
                 </div>
-                <a href="property.html?id=${u.id}" class="btn btn-primary" style="padding:0.6rem 1.1rem;font-size:0.85rem;">
+                <a href="property.html?id=${u.id}" class="btn btn-primary" onclick="event.stopPropagation()" style="padding:0.6rem 1.1rem;font-size:0.85rem;">
                   View Room
                 </a>
               </div>
             </div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
+
+        // Init carousel state + auto-cycle
+        units.forEach(u => {
+          const photos = Array.isArray(u.photoURLs) ? u.photoURLs.filter(Boolean) : [];
+          if (photos.length > 1) {
+            RC[u.id] = { photos, idx: 0 };
+            setInterval(() => rcNext(u.id), 4000);
+          }
+        });
+
       } catch (e) {
         grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Could not load rooms. Please refresh.</p></div>`;
       }
