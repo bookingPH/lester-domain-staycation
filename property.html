@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Details — Staycation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-name" id="nav-name">Staycation</span>
+        <span class="nav-logo-tag">Book Direct</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#rooms">Rooms</a></li>
+        <li><a href="index.html#amenities">Amenities</a></li>
+        <li><a href="index.html#how-it-works">How It Works</a></li>
+        <li><a href="booking-policy.html">Policies</a></li>
+      </ul>
+      <a href="index.html#rooms" class="btn btn-primary nav-book">All Rooms</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html#rooms">All Rooms</a>
+      <a href="index.html#amenities">Amenities</a>
+      <a href="booking-policy.html">Policies</a>
+    </div>
+  </nav>
+
+  <!-- PROPERTY HERO / GALLERY -->
+  <div class="property-hero" id="property-hero">
+    <div class="property-hero-placeholder" id="hero-placeholder">
+      <i class="fa-solid fa-image"></i>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="index.html" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Back to all rooms
+    </a>
+
+    <div class="property-content" id="property-content" style="display:none;">
+
+      <!-- LEFT: Info -->
+      <div class="property-info">
+        <div id="not-found" style="display:none;" class="empty-state">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <p>Room not found. <a href="index.html" style="color:var(--primary)">View all rooms</a></p>
+        </div>
+
+        <div id="property-details">
+          <h1 class="property-name" id="unit-name">Loading...</h1>
+          <div class="property-location">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="unit-location">—</span>
+          </div>
+
+          <div class="property-meta-row" id="unit-meta"></div>
+
+          <div class="property-section">
+            <h3>About This Room</h3>
+            <p class="property-desc" id="unit-desc">—</p>
+          </div>
+
+          <div class="property-section" id="amenities-section">
+            <h3>Amenities</h3>
+            <div class="property-amenities-grid" id="unit-amenities"></div>
+          </div>
+
+          <div class="property-section">
+            <h3>Room Details</h3>
+            <div class="property-amenities-grid" id="unit-details-grid"></div>
+          </div>
+
+          <div class="property-section">
+            <h3>Policies</h3>
+            <div class="property-amenities-grid" id="unit-policies"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Booking Box -->
+      <div>
+        <div class="booking-box" id="booking-box">
+          <div class="booking-box-price">
+            <p class="from">Weekday rate</p>
+            <div class="price-row">
+              <span class="price-amount" id="box-weekday">₱—</span>
+              <span class="price-per">/ night</span>
+            </div>
+            <p class="weekend-note" id="box-weekend-note"></p>
+          </div>
+          <div class="booking-box-info">
+            <div class="booking-box-info-row">
+              <span class="label"><i class="fa-solid fa-user-group"></i> Max Guests</span>
+              <span class="value" id="box-guests">—</span>
+            </div>
+            <div class="booking-box-info-row">
+              <span class="label"><i class="fa-solid fa-arrow-right-to-bracket"></i> Check-in</span>
+              <span class="value" id="box-checkin">—</span>
+            </div>
+            <div class="booking-box-info-row">
+              <span class="label"><i class="fa-solid fa-arrow-right-from-bracket"></i> Check-out</span>
+              <span class="value" id="box-checkout">—</span>
+            </div>
+            <div class="booking-box-info-row">
+              <span class="label"><i class="fa-solid fa-peso-sign"></i> Reservation fee</span>
+              <span class="value" id="box-deposit">₱500</span>
+            </div>
+          </div>
+          <a href="#" id="book-btn" class="btn btn-primary">
+            <i class="fa-solid fa-calendar-check"></i> Book This Room
+          </a>
+          <p class="booking-box-note">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i>
+            Pay only the reservation fee to hold your dates
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="margin-top:4rem;">
+    <div class="container">
+      <div class="footer-bottom">
+        <span id="footer-copy">© 2026 Staycation. All rights reserved.</span>
+        <span>Powered by <strong style="color:var(--primary)">BookingPH</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, collection, getDocs, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { FIREBASE_CONFIG, CLIENT_ID } from './firebase-config.js';
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db = getFirestore(app);
+    const clientRef = doc(db, 'clients', CLIENT_ID);
+    const php = n => '₱' + Number(n).toLocaleString();
+
+    const params = new URLSearchParams(location.search);
+    const unitId = params.get('id');
+
+    if (!unitId) {
+      location.href = 'index.html';
+    }
+
+    // Mobile nav
+    document.getElementById('nav-toggle').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('open');
+    });
+
+    async function load() {
+      document.getElementById('property-content').style.display = 'grid';
+
+      try {
+        // Load settings
+        const settingsSnap = await getDoc(doc(clientRef, 'settings', 'main'));
+        if (settingsSnap.exists()) {
+          const s = settingsSnap.data();
+          const name = s.companyName || 'Staycation';
+          document.getElementById('nav-name').textContent = name;
+          document.title = 'Room Details — ' + name;
+          document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${name}. All rights reserved.`;
+          if (s.downPaymentAmount) document.getElementById('box-deposit').textContent = php(s.downPaymentAmount);
+        }
+
+        // Load unit
+        const unitSnap = await getDoc(doc(clientRef, 'units', unitId));
+        if (!unitSnap.exists() || unitSnap.data().status !== 'active') {
+          document.getElementById('property-details').style.display = 'none';
+          document.getElementById('booking-box').style.display = 'none';
+          document.getElementById('not-found').style.display = 'block';
+          return;
+        }
+
+        const u = { id: unitSnap.id, ...unitSnap.data() };
+
+        // Hero photo
+        if (u.photoURLs && u.photoURLs.length > 0) {
+          const heroEl = document.getElementById('property-hero');
+          heroEl.innerHTML = `<img src="${u.photoURLs[0]}" alt="${u.name}" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+
+        // Basic info
+        document.getElementById('unit-name').textContent = u.name;
+        document.title = u.name + ' — Staycation';
+        document.getElementById('unit-location').textContent = u.location || 'On-site';
+        document.getElementById('unit-desc').textContent = u.description || '';
+
+        // Meta row
+        document.getElementById('unit-meta').innerHTML = `
+          <div class="property-meta-item"><i class="fa-solid fa-user-group"></i> Up to ${u.maxGuests} guests</div>
+          <div class="property-meta-item"><i class="fa-solid fa-arrow-right-to-bracket"></i> Check-in ${u.checkIn || '2:00 PM'}</div>
+          <div class="property-meta-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Check-out ${u.checkOut || '12:00 PM'}</div>
+          ${u.petsAllowed ? `<div class="property-meta-item"><i class="fa-solid fa-paw"></i> Pets allowed</div>` : ''}
+        `;
+
+        // Booking box
+        document.getElementById('box-weekday').textContent = php(u.weekdayRate);
+        if (u.weekendRate && u.weekendRate !== u.weekdayRate) {
+          document.getElementById('box-weekend-note').textContent = `Weekend rate: ${php(u.weekendRate)} / night`;
+        }
+        document.getElementById('box-guests').textContent = u.maxGuests + (u.maxExtraGuests ? ` (+${u.maxExtraGuests} extra)` : '');
+        document.getElementById('box-checkin').textContent = u.checkIn || '2:00 PM';
+        document.getElementById('box-checkout').textContent = u.checkOut || '12:00 PM';
+        document.getElementById('book-btn').href = `booking.html?id=${u.id}`;
+
+        // Details grid
+        document.getElementById('unit-details-grid').innerHTML = [
+          { icon: 'fa-user-group', text: `Base: ${u.maxGuests} guests` },
+          u.maxExtraGuests ? { icon: 'fa-user-plus', text: `Extra guests: up to ${u.maxExtraGuests} (+${php(u.extraGuestFee || 0)}/person)` } : null,
+          { icon: 'fa-arrow-right-to-bracket', text: `Check-in: ${u.checkIn || '2:00 PM'}` },
+          { icon: 'fa-arrow-right-from-bracket', text: `Check-out: ${u.checkOut || '12:00 PM'}` },
+          { icon: 'fa-peso-sign', text: `Weekday: ${php(u.weekdayRate)}/night` },
+          u.weekendRate ? { icon: 'fa-calendar-week', text: `Weekend: ${php(u.weekendRate)}/night` } : null,
+        ].filter(Boolean).map(item => `
+          <div class="property-amenity">
+            <i class="fa-solid ${item.icon}"></i> ${item.text}
+          </div>
+        `).join('');
+
+        // Policies
+        document.getElementById('unit-policies').innerHTML = [
+          { icon: 'fa-paw', text: u.petsAllowed ? `Pets allowed (+${php(u.petFee || 0)}/night)` : 'No pets allowed' },
+          { icon: 'fa-smoking-ban', text: 'No smoking inside the property' },
+          { icon: 'fa-volume-xmark', text: 'Quiet hours after 10:00 PM' },
+          { icon: 'fa-trash', text: 'Please keep the property clean' },
+        ].map(p => `
+          <div class="property-amenity">
+            <i class="fa-solid ${p.icon}"></i> ${p.text}
+          </div>
+        `).join('');
+
+        // Load amenities
+        try {
+          const amenitiesSnap = await getDocs(collection(clientRef, 'amenities'));
+          if (!amenitiesSnap.empty) {
+            const items = [];
+            amenitiesSnap.forEach(d => items.push(d.data()));
+            document.getElementById('unit-amenities').innerHTML = items.map(a => `
+              <div class="property-amenity">
+                <i class="fa-solid ${a.icon || 'fa-star'}"></i> ${a.name}
+              </div>
+            `).join('');
+          } else {
+            document.getElementById('amenities-section').style.display = 'none';
+          }
+        } catch (e) {
+          document.getElementById('amenities-section').style.display = 'none';
+        }
+
+      } catch (e) {
+        console.error('Load error:', e);
+        document.getElementById('property-details').style.display = 'none';
+        document.getElementById('not-found').style.display = 'block';
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

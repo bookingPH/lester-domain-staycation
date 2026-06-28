@@ -1,5 +1,313 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Staycation Booking</title></head>
-<body><h1>Coming soon...</h1></body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staycation Booking</title>
+  <meta name="description" content="Book your perfect getaway. Browse rooms, check availability, and pay securely.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-name" id="nav-name">Staycation</span>
+        <span class="nav-logo-tag">Book Direct</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#rooms">Rooms</a></li>
+        <li><a href="#amenities">Amenities</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="booking-policy.html">Policies</a></li>
+      </ul>
+      <a href="#rooms" class="btn btn-primary nav-book">Book Now</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#rooms">Rooms</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="booking-policy.html">Policies</a>
+      <a href="#rooms" class="btn btn-primary" style="text-align:center;justify-content:center;margin-top:0.5rem;">Book Now</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-photo" id="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <div class="hero-tag">
+        <i class="fa-solid fa-location-dot"></i>
+        <span id="hero-location">Philippines</span>
+      </div>
+      <h1 id="hero-title">Your Home Away<br>From Home</h1>
+      <p class="hero-sub">
+        Affordable stays, zero hassle. Browse our rooms, pick your dates, and book in minutes — no hidden fees.
+      </p>
+      <div class="hero-actions">
+        <a href="#rooms" class="btn btn-primary">
+          <i class="fa-solid fa-door-open"></i> View Rooms
+        </a>
+        <a href="#how-it-works" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.5);">
+          How It Works
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <i class="fa-solid fa-chevron-down"></i>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="container stats-inner">
+      <div class="stat-item">
+        <i class="fa-solid fa-peso-sign"></i>
+        <span>Starts at <strong id="stat-price">₱2,500</strong> / night</span>
+      </div>
+      <div class="stat-item">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span><strong>Secure</strong> booking process</span>
+      </div>
+      <div class="stat-item">
+        <i class="fa-solid fa-clock"></i>
+        <span>Confirmed within <strong>1–2 hours</strong></span>
+      </div>
+      <div class="stat-item">
+        <i class="fa-solid fa-headset"></i>
+        <span><strong>Direct</strong> owner contact</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOMS -->
+  <section id="rooms" class="rooms">
+    <div class="container">
+      <div class="rooms-header">
+        <div>
+          <p class="section-label">Available Rooms</p>
+          <h2 class="section-title">Choose Your <span>Perfect Room</span></h2>
+        </div>
+      </div>
+      <div class="rooms-grid" id="rooms-grid">
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-photo"></div>
+          <div class="skeleton-body">
+            <div class="skeleton skeleton-line w-40"></div>
+            <div class="skeleton skeleton-line w-80"></div>
+            <div class="skeleton skeleton-line w-60"></div>
+          </div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-photo"></div>
+          <div class="skeleton-body">
+            <div class="skeleton skeleton-line w-40"></div>
+            <div class="skeleton skeleton-line w-80"></div>
+            <div class="skeleton skeleton-line w-60"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AMENITIES -->
+  <section id="amenities" class="amenities">
+    <div class="container">
+      <p class="section-label">What's Included</p>
+      <h2 class="section-title">Everything You <span>Need</span></h2>
+      <div class="amenities-grid" id="amenities-grid"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container" style="text-align:center;">
+      <p class="section-label">Simple Process</p>
+      <h2 class="section-title">Book in <span>3 Easy Steps</span></h2>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Pick Your Room</h3>
+          <p>Browse available rooms, check dates on the calendar, and choose what fits your needs and budget.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Fill Your Details</h3>
+          <p>Enter your name, contact info, number of guests, and any add-ons you want. Takes under 2 minutes.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Pay & You're In</h3>
+          <p>Send your reservation fee via GCash, PayMaya, or bank transfer — upload your screenshot and done.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <div class="container">
+      <h2>Ready to Book Your Stay?</h2>
+      <p>Rooms fill up fast — secure your dates today.</p>
+      <a href="#rooms" class="btn" style="background:#fff;color:var(--accent);font-weight:700;padding:0.85rem 2.5rem;">
+        <i class="fa-solid fa-calendar-check"></i> Reserve a Room
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <span class="nav-logo-name" id="footer-name">Staycation</span>
+            <span class="nav-logo-tag">Affordable Getaway</span>
+          </div>
+          <p>Your go-to spot for a relaxing and affordable staycation. Book directly with us — no middlemen, no extra fees.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a href="#rooms">Browse Rooms</a>
+          <a href="#amenities">Amenities</a>
+          <a href="booking-policy.html">Booking Policy</a>
+          <a href="cancellation.html">Cancellation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <p><i class="fa-solid fa-location-dot"></i><span id="footer-address">Philippines</span></p>
+          <p><i class="fa-solid fa-phone"></i><span id="footer-phone">—</span></p>
+          <p><i class="fa-solid fa-envelope"></i><span id="footer-email">—</span></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span id="footer-copy">© 2026 Staycation. All rights reserved.</span>
+        <span>Powered by <strong style="color:var(--primary)">BookingPH</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, collection, getDocs, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { FIREBASE_CONFIG, CLIENT_ID } from './firebase-config.js';
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db = getFirestore(app);
+    const clientRef = doc(db, 'clients', CLIENT_ID);
+    const php = n => '₱' + Number(n).toLocaleString();
+
+    async function loadSettings() {
+      try {
+        const snap = await getDoc(doc(clientRef, 'settings', 'main'));
+        if (!snap.exists()) return;
+        const s = snap.data();
+        const name = s.companyName || 'Staycation';
+        document.getElementById('nav-name').textContent = name;
+        document.getElementById('footer-name').textContent = name;
+        document.getElementById('footer-copy').textContent = `© ${new Date().getFullYear()} ${name}. All rights reserved.`;
+        document.title = name + ' — Book Your Stay';
+        if (s.address) {
+          document.getElementById('hero-location').textContent = s.address;
+          document.getElementById('footer-address').textContent = s.address;
+        }
+        if (s.phone) document.getElementById('footer-phone').textContent = s.phone;
+        if (s.email) document.getElementById('footer-email').textContent = s.email;
+        if (s.heroImageUrl) {
+          const bg = document.getElementById('hero-bg');
+          bg.style.backgroundImage = `url('${s.heroImageUrl}')`;
+          bg.classList.add('loaded');
+        }
+      } catch (e) { console.error('Settings:', e); }
+    }
+
+    async function loadRooms() {
+      const grid = document.getElementById('rooms-grid');
+      try {
+        const snap = await getDocs(collection(clientRef, 'units'));
+        const units = [];
+        snap.forEach(d => { if (d.data().status === 'active') units.push({ id: d.id, ...d.data() }); });
+
+        if (units.length === 0) {
+          grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-bed"></i><p>No rooms available at the moment.</p></div>`;
+          return;
+        }
+
+        const lowest = Math.min(...units.map(u => u.weekdayRate || 0).filter(r => r > 0));
+        if (lowest) document.getElementById('stat-price').textContent = php(lowest);
+
+        grid.innerHTML = units.map(u => `
+          <div class="room-card">
+            <div class="room-card-photo">
+              ${u.photoURLs && u.photoURLs.length
+                ? `<img src="${u.photoURLs[0]}" alt="${u.name}" loading="lazy">`
+                : `<div class="room-card-photo-placeholder"><i class="fa-solid fa-image"></i></div>`}
+              <span class="room-card-badge">Available</span>
+            </div>
+            <div class="room-card-body">
+              <div class="room-card-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>${u.location || 'On-site'}</span>
+              </div>
+              <h3 class="room-card-name">${u.name}</h3>
+              <p class="room-card-desc">${u.description || ''}</p>
+              <div class="room-card-meta">
+                <span><i class="fa-solid fa-user-group"></i> Up to ${u.maxGuests} guests</span>
+                <span><i class="fa-solid fa-clock"></i> Check-in ${u.checkIn || '2:00 PM'}</span>
+              </div>
+              <div class="room-card-footer">
+                <div class="room-card-price">
+                  <span class="amount">${php(u.weekdayRate)}</span>
+                  <span class="per">/ night (weekday)</span>
+                </div>
+                <a href="property.html?id=${u.id}" class="btn btn-primary" style="padding:0.6rem 1.1rem;font-size:0.85rem;">
+                  View Room
+                </a>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Could not load rooms. Please refresh.</p></div>`;
+      }
+    }
+
+    async function loadAmenities() {
+      const grid = document.getElementById('amenities-grid');
+      try {
+        const snap = await getDocs(collection(clientRef, 'amenities'));
+        if (snap.empty) return;
+        const items = [];
+        snap.forEach(d => items.push(d.data()));
+        grid.innerHTML = items.map(a => `
+          <div class="amenity-card">
+            <div class="amenity-icon"><i class="fa-solid ${a.icon || 'fa-star'}"></i></div>
+            <p class="amenity-name">${a.name}</p>
+          </div>
+        `).join('');
+      } catch (e) { console.error('Amenities:', e); }
+    }
+
+    document.getElementById('nav-toggle').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('open');
+    });
+
+    document.querySelectorAll('.mobile-menu a').forEach(a =>
+      a.addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('open'))
+    );
+
+    loadSettings();
+    loadRooms();
+    loadAmenities();
+  </script>
+</body>
 </html>
