@@ -1133,7 +1133,7 @@ footer {
   .hero { min-height: 100svh; }
   .hero-content { max-width: 100%; }
   .rooms-header { flex-direction: column; align-items: flex-start; }
-  .stats-inner { gap: 1.5rem; justify-content: flex-start; overflow-x: auto; }
+  .stats-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; justify-items: start; }
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
   .footer-bottom { flex-direction: column; text-align: center; }
   .steps-grid { grid-template-columns: 1fr; gap: 2rem; }
