@@ -6,4 +6,4 @@ export const FIREBASE_CONFIG = {
   messagingSenderId: "441276126461"
 };
 
-export const CLIENT_ID = 'lester-domain-staycation';
+export const CLIENT_ID = 'logan-staycation';
